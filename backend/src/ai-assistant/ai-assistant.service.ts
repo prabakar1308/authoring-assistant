@@ -67,8 +67,13 @@ export class AiAssistantService {
 
         const routerNode = async (state: AssistantState) => {
             this.logger.log('Routing intent...');
-            const prompt = ChatPromptTemplate.fromTemplate(`You are a router. Classify the user's intent into exactly ONE word from this list: [search_component, search_page, aem, rag, general].
-Do not include any explanation or punctuation.
+            const prompt = ChatPromptTemplate.fromTemplate(`You are a router for an AEM Assistant. 
+Classify the user's intent into ONE word:
+- search_component: User wants to FIND WHERE a specific component (like 'hero' or 'teaser') is used on the site.
+- search_page: User wants to see ALL components that exist on a specific URL.
+- rag: User is asking 'HOW-TO' questions, asking for definitions, or general AEM processes.
+- aem: User is asking about the current environment setup or configuration.
+- general: Greeting or unrelated chat.
 
 Question: {question}
 Intent:`);
@@ -106,12 +111,16 @@ Intent:`);
 
             if (comp) {
                 const results = await this.searchService.searchByComponent(comp.selector, (store.urls as any), (comp as any).helperProps);
+                const contextMsg = results.length > 0
+                    ? `Found component ${comp.name} on ${results.length} pages: ${results.map(r => r.url).join(', ')}`
+                    : `Search completed: The component "${comp.name}" was NOT found on any of the ${store.urls.length} tracked pages.`;
+
                 return {
                     results: { component: comp, pages: results },
-                    context: [`Found component ${comp.name} on pages: ${results.map(r => r.url).join(', ')}`]
+                    context: [contextMsg]
                 };
             }
-            return { context: ["Component not found in AEM Store."] };
+            return { context: ["Component not found in AEM Store configuration."] };
         };
 
         const searchPageNode = async (state: AssistantState) => {
@@ -131,13 +140,16 @@ Intent:`);
         const generatorNode = async (state: AssistantState) => {
             this.logger.log('Generating final answer...');
             const prompt = ChatPromptTemplate.fromTemplate(`You are an expert AEM Assistant. 
-Use the provided Context and structured Results to answer the user's question accurately.
+Use the provided Context and Structured Results to answer the user's question accurately.
 
-If the Intent is 'search_component' or 'search_page', provide the specific findings from the context.
-If the context contains data, use it. Do not give general instructions if specific data is present.
+If the Intent is 'search_component' or 'search_page', summarize the findings clearly.
+If no results are found in the Structured Results, state that clearly rather than saying information is missing.
 
 Context:
 {context}
+
+Structured Results:
+{results}
 
 Intent: {intent}
 Question: {question}
@@ -145,6 +157,7 @@ Answer:`);
             const chain = prompt.pipe(llm).pipe(new StringOutputParser());
             const answer = await chain.invoke({
                 context: state.context.join('\n'),
+                results: JSON.stringify(state.results, null, 2),
                 intent: state.intent,
                 question: query
             });
