@@ -11,7 +11,7 @@ interface StoreData {
     environments: { id: string, value: string }[];
     availableTenants: { id: string, value: string, domain: string, selector: string }[];
     urls: { id: number, value: string, tenant: string }[];
-    components: { id: number, name: string, selector: string, helperProps?: string[] }[];
+    components: { id: number, name: string, selector: string, tenant: string, helperProps?: string[] }[];
 }
 
 export default function Dashboard() {
@@ -19,6 +19,9 @@ export default function Dashboard() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeView, setActiveView] = useState<'view' | 'manage'>('view');
+
+    // Selection State
+    const [selectedTenantId, setSelectedTenantId] = useState<string>('EW');
 
     // Analysis State
     const [analyzingUrl, setAnalyzingUrl] = useState<string | null>(null);
@@ -115,14 +118,20 @@ export default function Dashboard() {
         fetchStore();
     }, []);
 
+    const selectedTenant = store?.availableTenants.find(t => t.id === selectedTenantId);
+
     const filteredUrls = store?.urls.filter(u =>
-        u.value.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.tenant.toLowerCase().includes(searchTerm.toLowerCase())
+        u.tenant === selectedTenantId && (
+            u.value.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            u.tenant.toLowerCase().includes(searchTerm.toLowerCase())
+        )
     ) || [];
 
     const filteredComponents = store?.components.filter(c =>
-        c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.selector.toLowerCase().includes(searchTerm.toLowerCase())
+        c.tenant === selectedTenantId && (
+            c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            c.selector.toLowerCase().includes(searchTerm.toLowerCase())
+        )
     ) || [];
 
     if (isLoading) return <div className={styles.loading}>Loading AEM configuration...</div>;
@@ -130,6 +139,37 @@ export default function Dashboard() {
 
     return (
         <div className={styles.dashboard}>
+            {/* 1. Tenant Details & Selector (TOP) */}
+            {selectedTenant && (
+                <div className={styles.section} style={{ marginBottom: '0' }}>
+                    <div className={styles.sectionHeaderRow}>
+                        <h2 className={styles.sectionTitle} style={{ margin: 0 }}>🏢 {selectedTenant.value} Details</h2>
+                        <div className={styles.inlineTenantSelector}>
+                            <label htmlFor="tenant-select">Switch Tenant: </label>
+                            <select
+                                id="tenant-select"
+                                value={selectedTenantId}
+                                onChange={(e) => setSelectedTenantId(e.target.value)}
+                                className={styles.dropdown}
+                            >
+                                {store.availableTenants.map(t => (
+                                    <option key={t.id} value={t.id}>{t.value} ({t.id})</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                    <div className={styles.grid} style={{ marginTop: '16px' }}>
+                        <div className={styles.card}>
+                            <div className={styles.cardContent}>
+                                <div><strong>Domain:</strong> {selectedTenant.domain}</div>
+                                <div><strong>Base Path:</strong> {selectedTenant.selector}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* 2. Global Search & View Toggle */}
             <div className={styles.searchBar}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <input
@@ -160,24 +200,9 @@ export default function Dashboard() {
             {activeView === 'view' ? (
                 <>
                     <div className={styles.section}>
-                        <h2 className={styles.sectionTitle}>🏢 Available Tenants</h2>
+                        <h2 className={styles.sectionTitle}>🧱 {selectedTenant?.value} Components</h2>
                         <div className={styles.grid}>
-                            {store.availableTenants.filter(t => t.value.toLowerCase().includes(searchTerm.toLowerCase())).map(tenant => (
-                                <div key={tenant.id} className={styles.card}>
-                                    <div className={styles.cardTitle}>{tenant.value} ({tenant.id})</div>
-                                    <div className={styles.cardContent}>
-                                        <div>Domain: {tenant.domain}</div>
-                                        <div>Path: {tenant.selector}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className={styles.section}>
-                        <h2 className={styles.sectionTitle}>🧱 AEM Components</h2>
-                        <div className={styles.grid}>
-                            {filteredComponents.map(comp => (
+                            {filteredComponents.length > 0 ? filteredComponents.map(comp => (
                                 <div key={comp.id} className={styles.card}>
                                     <div className={styles.cardHeader}>
                                         <div className={styles.cardTitle}>{comp.name}</div>
@@ -198,14 +223,16 @@ export default function Dashboard() {
                                         )}
                                     </div>
                                 </div>
-                            ))}
+                            )) : (
+                                <div className={styles.noData}>No components registered for this tenant.</div>
+                            )}
                         </div>
                     </div>
 
                     <div className={styles.section}>
-                        <h2 className={styles.sectionTitle}>🔗 Tracked URLs</h2>
+                        <h2 className={styles.sectionTitle}>🔗 {selectedTenant?.value} Tracked URLs</h2>
                         <div className={styles.grid}>
-                            {filteredUrls.slice(0, 12).map(url => (
+                            {filteredUrls.length > 0 ? filteredUrls.map(url => (
                                 <div key={url.id} className={styles.card}>
                                     <div className={styles.cardHeader}>
                                         <div className={styles.cardTitle}>Page ID: {url.id}</div>
@@ -222,11 +249,8 @@ export default function Dashboard() {
                                         <div className={styles.badge}>{url.tenant}</div>
                                     </div>
                                 </div>
-                            ))}
-                            {filteredUrls.length > 12 && (
-                                <div className={styles.card} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <div style={{ color: 'var(--muted-foreground)' }}>+ {filteredUrls.length - 12} more pages</div>
-                                </div>
+                            )) : (
+                                <div className={styles.noData}>No URLs tracked for this tenant.</div>
                             )}
                         </div>
                     </div>
@@ -235,12 +259,12 @@ export default function Dashboard() {
                 <>
                     <div className={styles.section}>
                         <h2 className={styles.sectionTitle}>⚙️ Manage Components</h2>
-                        <ManageComponents />
+                        <ManageComponents selectedTenantId={selectedTenantId} />
                     </div>
 
                     <div className={styles.section}>
                         <h2 className={styles.sectionTitle}>🌐 Manage Tracked URLs</h2>
-                        <ManageList />
+                        <ManageList selectedTenantId={selectedTenantId} />
                     </div>
                 </>
             )}

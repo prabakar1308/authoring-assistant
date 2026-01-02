@@ -99,6 +99,61 @@
     box-shadow: 0 0 0 2px var(--ring);
 }
 
+.tenantSelector {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted-foreground);
+    font-weight: 500;
+}
+
+.dropdown {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--secondary);
+    color: var(--foreground);
+    font-size: 0.95rem;
+    outline: none;
+    cursor: pointer;
+    min-width: 200px;
+}
+
+.dropdown:focus {
+    border-color: var(--primary);
+}
+
+.noData {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    color: var(--muted-foreground);
+    font-style: italic;
+}
+
+.sectionHeaderRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.inlineTenantSelector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+}
+
 .manageSection {
     display: flex;
     flex-direction: column;

@@ -7,14 +7,20 @@ interface Component {
     id: number;
     name: string;
     selector: string;
+    tenant: string;
     helperProps?: string[];
 }
 
-export default function ManageComponents() {
+interface ManageComponentsProps {
+    selectedTenantId?: string;
+}
+
+export default function ManageComponents({ selectedTenantId }: ManageComponentsProps) {
     const [components, setComponents] = useState<Component[]>([]);
+    const [tenants, setTenants] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [editingId, setEditingId] = useState<number | null>(null);
-    const [formData, setFormData] = useState({ name: '', selector: '', helperProps: '' });
+    const [formData, setFormData] = useState({ name: '', selector: '', tenant: selectedTenantId || 'EW', helperProps: '' });
 
     const fetchComponents = async () => {
         setIsLoading(true);
@@ -22,6 +28,10 @@ export default function ManageComponents() {
             const res = await fetch('http://localhost:4000/aem/store');
             const data = await res.json();
             setComponents(data.components);
+            setTenants(data.availableTenants);
+            if (data.availableTenants.length > 0 && !formData.tenant) {
+                setFormData(prev => ({ ...prev, tenant: data.availableTenants[0].id }));
+            }
         } catch (err) {
             console.error('Error fetching components:', err);
         } finally {
@@ -33,8 +43,14 @@ export default function ManageComponents() {
         fetchComponents();
     }, []);
 
+    useEffect(() => {
+        if (!editingId && selectedTenantId) {
+            setFormData(prev => ({ ...prev, tenant: selectedTenantId }));
+        }
+    }, [selectedTenantId, editingId]);
+
     const resetForm = () => {
-        setFormData({ name: '', selector: '', helperProps: '' });
+        setFormData({ name: '', selector: '', tenant: selectedTenantId || tenants[0]?.id || 'EW', helperProps: '' });
         setEditingId(null);
     };
 
@@ -83,6 +99,7 @@ export default function ManageComponents() {
         setFormData({
             name: comp.name,
             selector: comp.selector,
+            tenant: comp.tenant,
             helperProps: comp.helperProps?.join(', ') || ''
         });
     };
@@ -110,6 +127,7 @@ export default function ManageComponents() {
                         onChange={e => setFormData({ ...formData, selector: e.target.value })}
                         required
                     />
+
                     <input
                         type="text"
                         placeholder="Helper Props (comma separated)"
@@ -131,7 +149,7 @@ export default function ManageComponents() {
             </div>
 
             <div className={styles.grid}>
-                {components.map(comp => (
+                {components.filter(c => c.tenant === selectedTenantId).map(comp => (
                     <div key={comp.id} className={styles.card}>
                         <div className={styles.cardHeader}>
                             <div className={styles.cardTitle}>{comp.name}</div>

@@ -45,49 +45,31 @@ export const AEM_STORE = {
     ],
     selectedTenant: "EW",
     urls: [
+        // Energiewacht (EW)
         { id: 1, value: "https://dev-www.energiewacht.nl/", tenant: "EW" },
         { id: 2, value: "https://dev-www.energiewacht.nl/cv-ketels", tenant: "EW" },
-        {
-            id: 3,
-            value: "https://dev-www.energiewacht.nl/cv-ketels/onderhoud",
-            tenant: "EW",
-        },
-        {
-            id: 4,
-            value: "https://dev-www.energiewacht.nl/zonnepanelen",
-            tenant: "EW",
-        },
-        {
-            id: 5,
-            value: "https://dev-www.energiewacht.nl/warmtepompen",
-            tenant: "EW",
-        },
-        {
-            id: 6,
-            value: "https://dev-www.energiewacht.nl/ventilatie",
-            tenant: "EW",
-        },
-        { id: 7, value: "https://dev-www.energiewacht.nl/airco", tenant: "EW" },
-        {
-            id: 8,
-            value: "https://dev-www.energiewacht.nl/airco/onderhoud",
-            tenant: "EW",
-        },
-        {
-            id: 9,
-            value: "https://dev-www.energiewacht.nl/warmtepompen/onderhoud",
-            tenant: "EW",
-        },
-        {
-            id: 10,
-            value: "https://dev-www.energiewacht.nl/zonneboilers/onderhoud",
-            tenant: "EW",
-        },
-        {
-            id: 11,
-            value: "https://dev-www.energiewacht.nl/ventilatie/onderhoud",
-            tenant: "EW",
-        },
+        { id: 3, value: "https://dev-www.energiewacht.nl/cv-ketels/onderhoud", tenant: "EW" },
+        { id: 4, value: "https://dev-www.energiewacht.nl/zonnepanelen", tenant: "EW" },
+        { id: 5, value: "https://dev-www.energiewacht.nl/warmtepompen", tenant: "EW" },
+
+        // Energiewacht West (EWW)
+        { id: 12, value: "https://dev-www.energiewachtwest.nl/", tenant: "EWW" },
+        { id: 13, value: "https://dev-www.energiewachtwest.nl/over-ons", tenant: "EWW" },
+        { id: 14, value: "https://dev-www.energiewachtwest.nl/service", tenant: "EWW" },
+
+        // Volta NXT (VOLNXT)
+        { id: 15, value: "https://dev-www.voltanxt.nl/", tenant: "VOLNXT" },
+        { id: 16, value: "https://dev-www.voltanxt.nl/producten", tenant: "VOLNXT" },
+        { id: 17, value: "https://dev-www.voltanxt.nl/advies", tenant: "VOLNXT" },
+
+        // Nederland Isoleert (NLI)
+        { id: 18, value: "https://dev-www.nederlandisoleert.nl/", tenant: "NLI" },
+        { id: 19, value: "https://dev-www.nederlandisoleert.nl/dakisolatie", tenant: "NLI" },
+        { id: 20, value: "https://dev-www.nederlandisoleert.nl/vloerisolatie", tenant: "NLI" },
+
+        // Klimaatroute (KLI)
+        { id: 21, value: "https://dev-www.klimaatroute.nl/", tenant: "KLI" },
+        { id: 22, value: "https://dev-www.klimaatroute.nl/zakelijk", tenant: "KLI" },
     ],
     components: [
         {
@@ -95,13 +77,14 @@ export const AEM_STORE = {
             name: "Multi-Step Form",
             selector: "container",
             helperProps: ["action", "emailSubject"],
+            tenant: "EW"
         },
-        { id: 2, name: "Hero V1", selector: "heroV1", helperProps: ["heading"] },
-        { id: 3, name: "Hero V2", selector: "heroV2" },
-        { id: 4, name: "Hero V3", selector: "heroV3" },
-        { id: 5, name: "Teaser V1", selector: "teasersV1" },
-        { id: 6, name: "Teaser V2", selector: "teasersV2" },
-        { id: 7, name: "Teaser V4", selector: "teasersV4" },
-        { id: 8, name: "Teaser V6", selector: "teasersV5" },
+        { id: 2, name: "Hero V1", selector: "heroV1", helperProps: ["heading"], tenant: "EW" },
+        { id: 3, name: "Hero V2", selector: "heroV2", tenant: "EW" },
+        { id: 4, name: "Hero V3", selector: "heroV3", tenant: "EWW" },
+        { id: 5, name: "Teaser V1", selector: "teasersV1", tenant: "VOLNXT" },
+        { id: 6, name: "Teaser V2", selector: "teasersV2", tenant: "NLI" },
+        { id: 7, name: "Teaser V4", selector: "teasersV4", tenant: "KLI" },
+        { id: 8, name: "Teaser V6", selector: "teasersV5", tenant: "EW" },
     ],
 };

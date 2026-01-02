@@ -9,12 +9,16 @@ interface UrlEntry {
     tenant: string;
 }
 
-export default function ManageList() {
+interface ManageListProps {
+    selectedTenantId?: string;
+}
+
+export default function ManageList({ selectedTenantId }: ManageListProps) {
     const [urls, setUrls] = useState<UrlEntry[]>([]);
     const [tenants, setTenants] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [editingId, setEditingId] = useState<number | null>(null);
-    const [formData, setFormData] = useState({ value: '', tenant: 'EW' });
+    const [formData, setFormData] = useState({ value: '', tenant: selectedTenantId || 'EW' });
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -37,8 +41,14 @@ export default function ManageList() {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        if (!editingId && selectedTenantId) {
+            setFormData(prev => ({ ...prev, tenant: selectedTenantId }));
+        }
+    }, [selectedTenantId, editingId]);
+
     const resetForm = () => {
-        setFormData({ value: '', tenant: tenants[0]?.id || 'EW' });
+        setFormData({ value: '', tenant: selectedTenantId || tenants[0]?.id || 'EW' });
         setEditingId(null);
     };
 
@@ -97,16 +107,7 @@ export default function ManageList() {
                         onChange={e => setFormData({ ...formData, value: e.target.value })}
                         required
                     />
-                    <select
-                        className={styles.searchInput}
-                        value={formData.tenant}
-                        onChange={e => setFormData({ ...formData, tenant: e.target.value })}
-                        required
-                    >
-                        {tenants.map(t => (
-                            <option key={t.id} value={t.id}>{t.value} ({t.id})</option>
-                        ))}
-                    </select>
+
                     <div className={styles.formActions}>
                         <button type="submit" className={styles.saveButton}>
                             {editingId ? 'Update' : 'Add URL'}
@@ -121,7 +122,7 @@ export default function ManageList() {
             </div>
 
             <div className={styles.grid}>
-                {urls.map(entry => (
+                {urls.filter(u => u.tenant === selectedTenantId).map(entry => (
                     <div key={entry.id} className={styles.card}>
                         <div className={styles.cardHeader}>
                             <div className={styles.cardTitle}>Page ID: {entry.id}</div>
@@ -136,7 +137,6 @@ export default function ManageList() {
                         </div>
                         <div className={styles.cardContent}>
                             <div style={{ wordBreak: 'break-all' }}>{entry.value}</div>
-                            <div className={styles.badge}>{entry.tenant}</div>
                         </div>
                     </div>
                 ))}
