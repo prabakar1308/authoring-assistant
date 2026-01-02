@@ -19,6 +19,17 @@ export class AemController {
         return this.searchService.searchByPage(url, store.components as any);
     }
 
+    @Get('search-component')
+    @ApiOperation({ summary: 'Search for all instances of a component across tracked URLs' })
+    @ApiQuery({ name: 'selector', description: 'The selector of the component to search for' })
+    async searchComponent(@Query('selector') selector: string) {
+        const store = this.aemService.getStore();
+        const comp = store.components.find(c => c.selector === selector);
+        if (!comp) return { pages: [] };
+        const pages = await this.searchService.searchByComponent(selector, store.urls as any, comp.helperProps);
+        return { pages };
+    }
+
     @Get('store')
     @ApiOperation({ summary: 'Get the current AEM Setup configuration' })
     async getStore() {

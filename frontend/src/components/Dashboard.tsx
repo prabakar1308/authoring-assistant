@@ -22,15 +22,17 @@ export default function Dashboard() {
 
     // Analysis State
     const [analyzingUrl, setAnalyzingUrl] = useState<string | null>(null);
+    const [analyzingComponent, setAnalyzingComponent] = useState<string | null>(null);
     const [analysisResults, setAnalysisResults] = useState<any[]>([]);
     const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     // Property Viewer State
-    const [selectedPropData, setSelectedPropData] = useState<{ name: string, selector: string, data: string } | null>(null);
+    const [selectedPropData, setSelectedPropData] = useState<{ name: string, selector: string, data: string, url?: string } | null>(null);
 
     const handleSaveProps = async (newData: any) => {
-        if (!selectedPropData || !analyzingUrl) return;
+        const targetUrl = selectedPropData?.url || analyzingUrl;
+        if (!selectedPropData || !targetUrl) return;
 
         try {
             const res = await fetch('http://localhost:4000/aem/update-page-props', {
@@ -45,7 +47,12 @@ export default function Dashboard() {
             if (!res.ok) throw new Error('Failed to save');
 
             // Refresh analysis results to reflect changes
-            handleAnalyzePage(analyzingUrl);
+            if (analyzingUrl) {
+                handleAnalyzePage(analyzingUrl);
+            } else if (analyzingComponent) {
+                const comp = store?.components.find(c => c.name === analyzingComponent);
+                if (comp) handleAnalyzeComponent(comp);
+            }
         } catch (err) {
             console.error('Error saving props:', err);
             throw err;
@@ -66,6 +73,7 @@ export default function Dashboard() {
 
     const handleAnalyzePage = async (url: string) => {
         setAnalyzingUrl(url);
+        setAnalyzingComponent(null);
         setIsAnalyzing(true);
         setIsAnalysisModalOpen(true);
         try {
@@ -74,6 +82,30 @@ export default function Dashboard() {
             setAnalysisResults(data);
         } catch (err) {
             console.error('Error analyzing page:', err);
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
+
+    const handleAnalyzeComponent = async (comp: any) => {
+        setAnalyzingComponent(comp.name);
+        setAnalyzingUrl(null);
+        setIsAnalyzing(true);
+        setIsAnalysisModalOpen(true);
+        try {
+            // Need a way to search for component across all URLs
+            const res = await fetch(`http://localhost:4000/aem/search-component?selector=${comp.selector}`);
+            const data = await res.json();
+            // Transform data to match the analysis modal expected format
+            const transformed = data.pages.map((p: any) => ({
+                name: comp.name,
+                selector: comp.selector,
+                url: p.url,
+                rawProps: p.rawProps
+            }));
+            setAnalysisResults(transformed);
+        } catch (err) {
+            console.error('Error searching component:', err);
         } finally {
             setIsAnalyzing(false);
         }
@@ -147,7 +179,16 @@ export default function Dashboard() {
                         <div className={styles.grid}>
                             {filteredComponents.map(comp => (
                                 <div key={comp.id} className={styles.card}>
-                                    <div className={styles.cardTitle}>{comp.name}</div>
+                                    <div className={styles.cardHeader}>
+                                        <div className={styles.cardTitle}>{comp.name}</div>
+                                        <button
+                                            className={styles.analyzeButton}
+                                            onClick={() => handleAnalyzeComponent(comp)}
+                                            title="Find Instances"
+                                        >
+                                            🔍 Analyze
+                                        </button>
+                                    </div>
                                     <div className={styles.cardContent}>
                                         <div>Selector: <code>{comp.selector}</code></div>
                                         {comp.helperProps && (
@@ -208,28 +249,37 @@ export default function Dashboard() {
             <Modal
                 isOpen={isAnalysisModalOpen}
                 onClose={() => setIsAnalysisModalOpen(false)}
-                title={`Analysis: ${analyzingUrl}`}
+                title={analyzingUrl ? `Page Analysis: ${analyzingUrl}` : `Component Analysis: ${analyzingComponent}`}
             >
                 {isAnalyzing ? (
                     <div className={styles.analysisLoading}>
                         <div className={styles.spinner}>⏳</div>
-                        <p>Scanning page for self-developed components...</p>
+                        <p>{analyzingUrl ? 'Scanning page for components...' : 'Searching for component across all pages...'}</p>
                     </div>
                 ) : (
                     <div className={styles.analysisResults}>
                         <p className={styles.analysisCount}>
-                            Found <strong>{analysisResults.length}</strong> self-developed components on this page.
+                            {analyzingUrl ? (
+                                <>Found <strong>{analysisResults.length}</strong> self-developed components on this page.</>
+                            ) : (
+                                <>Found <strong>{analysisResults.length}</strong> instances of this component across tracked pages.</>
+                            )}
                         </p>
                         <div className={styles.resultList}>
                             {analysisResults.map((result, idx) => (
                                 <div key={idx} className={styles.resultItem}>
                                     <div className={styles.resultInfo}>
-                                        <div className={styles.resultName}>{result.name}</div>
+                                        <div className={styles.resultName}>{analyzingComponent ? result.url : result.name}</div>
                                         <div className={styles.resultSelector}><code>{result.selector}</code></div>
                                     </div>
                                     <button
                                         className={styles.viewDataButton}
-                                        onClick={() => setSelectedPropData({ name: result.name, selector: result.selector, data: result.rawProps })}
+                                        onClick={() => setSelectedPropData({
+                                            name: result.name,
+                                            selector: result.selector,
+                                            data: result.rawProps,
+                                            url: result.url
+                                        })}
                                     >
                                         View & Edit Data
                                     </button>
