@@ -45,6 +45,7 @@ export class SearchService {
                 results.push({
                     url: url.value,
                     id: url.id,
+                    rawProps: props,
                     ...helpers
                 });
             }
@@ -79,6 +80,7 @@ export class SearchService {
                     results.push({
                         name: comp.name,
                         selector: comp.selector,
+                        rawProps: props,
                         helpers
                     });
                 }

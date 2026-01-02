@@ -1,0 +1,38 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.info {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: var(--secondary);
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.jsonWrapper {
+    background: #272822;
+    /* Monokai background */
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    min-height: 200px;
+}

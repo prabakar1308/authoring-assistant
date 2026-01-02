@@ -98,3 +98,272 @@
     border-color: var(--primary);
     box-shadow: 0 0 0 2px var(--ring);
 }
+
+.manageSection {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.formCard {
+    background: var(--card);
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.formCard h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--primary);
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
+@media (min-width: 768px) {
+    .formGrid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+.formActions {
+    display: flex;
+    gap: 12px;
+    grid-column: 1 / -1;
+}
+
+.saveButton {
+    background: var(--primary);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.cancelButton {
+    background: var(--muted);
+    color: var(--muted-foreground);
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.saveButton:hover,
+.cancelButton:hover {
+    opacity: 0.9;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.cardActions {
+    display: flex;
+    gap: 8px;
+}
+
+.cardActions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 6px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cardActions button:hover {
+    background: var(--secondary);
+}
+
+.deleteButton {
+    color: #ef4444 !important;
+}
+
+.deleteButton:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+}
+
+.editButton {
+    color: var(--primary) !important;
+}
+
+.editButton:hover {
+    background: rgba(var(--primary-rgb, 59, 130, 246), 0.1) !important;
+}
+
+.formGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.formGrid input,
+.formGrid select {
+    flex: 1;
+    min-width: 250px;
+}
+
+.viewToggle {
+    display: flex;
+    gap: 12px;
+    background: var(--secondary);
+    padding: 4px;
+    border-radius: 8px;
+    width: fit-content;
+    margin-bottom: 8px;
+}
+
+.toggleButton {
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: none;
+    background: none;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.toggleButtonActive {
+    background: var(--background);
+    color: var(--primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.analyzeButton {
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    color: var(--primary);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.analyzeButton:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.analysisLoading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 16px;
+    color: var(--muted-foreground);
+}
+
+.spinner {
+    font-size: 2rem;
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.analysisResults {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.analysisCount {
+    font-size: 1rem;
+    color: var(--foreground);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.resultList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.resultItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--secondary);
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s;
+}
+
+.resultItem:hover {
+    border-color: var(--primary);
+}
+
+.resultInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.resultName {
+    font-weight: 700;
+    color: var(--foreground);
+}
+
+.resultSelector {
+    font-size: 0.85rem;
+    color: var(--muted-foreground);
+}
+
+.viewDataButton {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.viewDataButton:hover {
+    opacity: 0.9;
+}
