@@ -4,7 +4,6 @@ import { useState, useRef } from 'react';
 import styles from './IngestionPanel.module.css';
 
 export default function IngestionPanel() {
-    const [isOpen, setIsOpen] = useState(false);
     const [status, setStatus] = useState<{ type: 'success' | 'error' | 'uploading' | null, message: string }>({ type: null, message: '' });
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -44,37 +43,40 @@ export default function IngestionPanel() {
     };
 
     return (
-        <div className={styles.panel}>
-            <div className={styles.header} onClick={() => setIsOpen(!isOpen)}>
+        <div className={styles.container}>
+            <div className={styles.header}>
                 <div className={styles.title}>
                     📚 Knowledge Base Ingestion
                 </div>
-                <div>{isOpen ? '▼' : '▶'}</div>
             </div>
 
-            {isOpen && (
-                <div className={styles.content}>
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        style={{ display: 'none' }}
-                        onChange={handleFileChange}
-                        accept=".pdf,.txt,.md"
-                    />
+            <div className={styles.content}>
+                <p className={styles.description}>
+                    Upload PDF, Text, or Markdown files to expand the AI's knowledge base.
+                    The uploaded content will be processed and indexed for retrieval.
+                </p>
 
-                    <div className={styles.dropzone} onClick={() => fileInputRef.current?.click()}>
-                        <p>Drag & drop or <button className={styles.browseButton}>Browse</button></p>
-                        <p className={styles.info}>Supported: PDF, TXT, MD</p>
-                    </div>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    onChange={handleFileChange}
+                    accept=".pdf,.txt,.md"
+                />
 
-                    {status.type && (
-                        <div className={`${styles.status} ${status.type === 'error' ? styles.error : styles.success}`}>
-                            {status.type === 'uploading' && <span className={styles.typingDot}>⏳</span>}
-                            <span>{status.message}</span>
-                        </div>
-                    )}
+                <div className={styles.dropzone} onClick={() => fileInputRef.current?.click()}>
+                    <div className={styles.dropzoneIcon}>📤</div>
+                    <p>Drag & drop or <button className={styles.browseButton}>Browse</button></p>
+                    <p className={styles.info}>Supported: PDF, TXT, MD</p>
                 </div>
-            )}
+
+                {status.type && (
+                    <div className={`${styles.status} ${status.type === 'error' ? styles.error : (status.type === 'uploading' ? styles.info : styles.success)}`}>
+                        {status.type === 'uploading' && <span className={styles.spinner}>⏳</span>}
+                        <span>{status.message}</span>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

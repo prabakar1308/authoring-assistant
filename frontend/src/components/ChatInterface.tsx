@@ -2,10 +2,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 import styles from './ChatInterface.module.css';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Message {
     role: 'user' | 'assistant';
     content: string;
+    intent?: string;
 }
 
 export default function ChatInterface() {
@@ -34,7 +37,7 @@ export default function ChatInterface() {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:4000/rag/query', {
+            const response = await fetch('http://localhost:4000/assistant/query', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -45,10 +48,20 @@ export default function ChatInterface() {
                 throw new Error(`Error: ${response.status}`);
             }
             const data = await response.json();
-            setMessages(prev => [...prev, { role: 'assistant', content: data.answer }]);
+
+            let content = data.answer;
+            if (data.results && Array.isArray(data.results)) {
+                content += "\n\n**Processed Results:**\n" + data.results.map((r: any) => `- ${r.url || r.name}`).join('\n');
+            }
+
+            setMessages(prev => [...prev, {
+                role: 'assistant',
+                content: content,
+                intent: data.intent
+            }]);
         } catch (error) {
             console.error(error);
-            setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error connecting to the knowledge base. Please ensure the backend is running.' }]);
+            setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error connecting to the AI Assistant. Please ensure the backend is running.' }]);
         } finally {
             setIsLoading(false);
         }
@@ -63,7 +76,14 @@ export default function ChatInterface() {
                             {msg.role === 'user' ? 'U' : 'AI'}
                         </div>
                         <div className={styles.bubble}>
-                            {msg.content}
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {msg.content}
+                            </ReactMarkdown>
+                            {msg.intent && (
+                                <div className={styles.intentBadge}>
+                                    Intent: {msg.intent}
+                                </div>
+                            )}
                         </div>
                     </div>
                 ))}

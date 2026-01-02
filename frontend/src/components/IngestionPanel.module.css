@@ -1,65 +1,92 @@
-.panel {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
+.container {
     padding: 20px;
-    margin-bottom: 20px;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    animation: fadeIn 0.4s ease-out;
 }
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    cursor: pointer;
+    margin-bottom: 8px;
 }
 
 .title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--foreground);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
 }
 
 .content {
-    animation: slideDown 0.3s ease-out;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 800px;
+    align-self: flex-start;
+    width: 100%;
+}
+
+.description {
+    color: var(--muted-foreground);
+    line-height: 1.6;
+    font-size: 1rem;
 }
 
 .dropzone {
-    border: 2px dashed var(--muted-foreground);
-    border-radius: 8px;
-    padding: 30px;
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 60px 40px;
     text-align: center;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     background: var(--secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
 }
 
 .dropzone:hover {
     border-color: var(--primary);
     background: var(--muted);
+    transform: translateY(-2px);
+}
+
+.dropzoneIcon {
+    font-size: 3rem;
+    margin-bottom: 12px;
 }
 
 .browseButton {
     background: var(--primary);
     color: white;
-    padding: 8px 16px;
-    border-radius: 6px;
+    padding: 8px 20px;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
-    font-weight: 500;
-    margin-left: 8px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.browseButton:hover {
+    opacity: 0.9;
 }
 
 .status {
-    margin-top: 15px;
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 0.9rem;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 0.95rem;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    animation: fadeIn 0.3s ease-out;
 }
 
 .success {
@@ -77,13 +104,16 @@
 .info {
     font-size: 0.85rem;
     color: var(--muted-foreground);
-    margin-top: 8px;
 }
 
-@keyframes slideDown {
+.spinner {
+    font-size: 1.2rem;
+}
+
+@keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(10px);
     }
 
     to {
