@@ -62,4 +62,10 @@ export class AemController {
     async deleteUrl(@Param('id', ParseIntPipe) id: number) {
         return this.aemService.deleteUrl(id);
     }
+
+    @Post('update-page-props')
+    @ApiOperation({ summary: 'Update (override) component props for a specific page in the current session' })
+    async updatePageProps(@Body() body: { url: string, selector: string, props: any }) {
+        return this.aemService.updatePageProps(body.url, body.selector, body.props);
+    }
 }

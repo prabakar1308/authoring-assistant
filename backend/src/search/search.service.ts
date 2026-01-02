@@ -1,12 +1,25 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { AemService } from '../aem/aem.service';
 
 @Injectable()
 export class SearchService {
     private readonly logger = new Logger(SearchService.name);
 
+    constructor(
+        @Inject(forwardRef(() => AemService))
+        private readonly aemService: AemService
+    ) { }
+
     async getComponentProps(url: string, selector: string): Promise<string | null> {
+        // Check for override first
+        const override = this.aemService.getPagePropsOverride(url, selector);
+        if (override) {
+            this.logger.log(`Using override for ${selector} on ${url}`);
+            return typeof override === 'string' ? override : JSON.stringify(override);
+        }
+
         try {
             this.logger.log(`Fetching ${url} to search for component ${selector}`);
             const { data } = await axios.get(url, { timeout: 10000 });
@@ -62,7 +75,9 @@ export class SearchService {
             for (const comp of components) {
                 const el = $(`[data-component="${comp.selector}"]`);
                 if (el.length > 0) {
-                    const props = el.first().attr('data-props');
+                    // Check for override
+                    let props = await this.getComponentProps(url, comp.selector);
+
                     let parsedProps = {};
                     if (props) {
                         try {

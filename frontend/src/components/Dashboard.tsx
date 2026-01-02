@@ -27,7 +27,30 @@ export default function Dashboard() {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     // Property Viewer State
-    const [selectedPropData, setSelectedPropData] = useState<{ name: string, data: string } | null>(null);
+    const [selectedPropData, setSelectedPropData] = useState<{ name: string, selector: string, data: string } | null>(null);
+
+    const handleSaveProps = async (newData: any) => {
+        if (!selectedPropData || !analyzingUrl) return;
+
+        try {
+            const res = await fetch('http://localhost:4000/aem/update-page-props', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    url: analyzingUrl,
+                    selector: selectedPropData.selector,
+                    props: newData
+                })
+            });
+            if (!res.ok) throw new Error('Failed to save');
+
+            // Refresh analysis results to reflect changes
+            handleAnalyzePage(analyzingUrl);
+        } catch (err) {
+            console.error('Error saving props:', err);
+            throw err;
+        }
+    };
 
     const fetchStore = async () => {
         try {
@@ -206,9 +229,9 @@ export default function Dashboard() {
                                     </div>
                                     <button
                                         className={styles.viewDataButton}
-                                        onClick={() => setSelectedPropData({ name: result.name, data: result.rawProps })}
+                                        onClick={() => setSelectedPropData({ name: result.name, selector: result.selector, data: result.rawProps })}
                                     >
-                                        View Data
+                                        View & Edit Data
                                     </button>
                                 </div>
                             ))}
@@ -224,7 +247,11 @@ export default function Dashboard() {
                 title="Data Props Inspector"
             >
                 {selectedPropData && (
-                    <PropertyViewer name={selectedPropData.name} data={selectedPropData.data} />
+                    <PropertyViewer
+                        name={selectedPropData.name}
+                        data={selectedPropData.data}
+                        onSave={handleSaveProps}
+                    />
                 )}
             </Modal>
         </div>

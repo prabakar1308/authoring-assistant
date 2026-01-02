@@ -1,7 +1,8 @@
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
-  --primary: #4f46e5;
+  --primary: #083253;
+  --primary-rgb: 8, 50, 83;
   --primary-foreground: #ffffff;
   --secondary: #f1f5f9;
   --secondary-foreground: #0f172a;
@@ -13,32 +14,41 @@
   --card-foreground: #0f172a;
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #4f46e5;
+  --ring: #083253;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #020617; /* Slate 950 */
-    --foreground: #f8fafc; /* Slate 50 */
-    --primary: #6366f1; /* Indigo 500 */
+    --background: #020617;
+    /* Slate 950 */
+    --foreground: #f8fafc;
+    /* Slate 50 */
+    --primary: #083253;
+    --primary-rgb: 8, 50, 83;
     --primary-foreground: #ffffff;
-    --secondary: #1e293b; /* Slate 800 */
+    --secondary: #1e293b;
+    /* Slate 800 */
     --secondary-foreground: #f8fafc;
-    --muted: #0f172a; /* Slate 900 */
-    --muted-foreground: #94a3b8; /* Slate 400 */
-    --accent: #f43f5e; /* Rose 500 */
+    --muted: #0f172a;
+    /* Slate 900 */
+    --muted-foreground: #94a3b8;
+    /* Slate 400 */
+    --accent: #f43f5e;
+    /* Rose 500 */
     --accent-foreground: #ffffff;
-    --card: #1e293b; /* Slate 800 */
+    --card: #1e293b;
+    /* Slate 800 */
     --card-foreground: #f8fafc;
-    --border: #334155; /* Slate 700 */
+    --border: #334155;
+    /* Slate 700 */
     --input: #334155;
-    --ring: #6366f1;
+    --ring: #083253;
   }
 }
 
 html,
 body {
-  height: 100%;
+  /* height: 100%; */
 }
 
 body {
@@ -53,14 +63,17 @@ body {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--muted-foreground);
   border-radius: 4px;
   opacity: 0.5;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
 }
@@ -71,8 +84,15 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .glass-panel {

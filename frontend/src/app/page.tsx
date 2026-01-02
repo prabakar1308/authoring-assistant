@@ -13,7 +13,7 @@ export default function Home() {
     <main className={styles.main}>
       <div className={styles.header}>
         <div className={styles.title}>
-          <span>✨</span> AEM Authoring Assistant
+          <span>🤖</span> AEM Author Assistant
         </div>
       </div>
 
@@ -39,9 +39,11 @@ export default function Home() {
           </button>
         </div>
 
-        {activeTab === 'chat' && <ChatInterface />}
-        {activeTab === 'dashboard' && <Dashboard />}
-        {activeTab === 'ingestion' && <IngestionPanel />}
+        <div className={styles.contentArea}>
+          {activeTab === 'chat' && <ChatInterface />}
+          {activeTab === 'dashboard' && <Dashboard />}
+          {activeTab === 'ingestion' && <IngestionPanel />}
+        </div>
       </div>
     </main>
   );

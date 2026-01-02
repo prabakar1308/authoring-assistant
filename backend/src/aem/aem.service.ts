@@ -52,4 +52,19 @@ export class AemService {
         this.store.urls = this.store.urls.filter(u => u.id !== id);
         return { success: true };
     }
+
+    // Page Props Overrides (In-memory session cache)
+    private pagePropsOverrides = new Map<string, Map<string, any>>();
+
+    updatePageProps(url: string, selector: string, props: any) {
+        if (!this.pagePropsOverrides.has(url)) {
+            this.pagePropsOverrides.set(url, new Map());
+        }
+        this.pagePropsOverrides.get(url)!.set(selector, props);
+        return { success: true };
+    }
+
+    getPagePropsOverride(url: string, selector: string) {
+        return this.pagePropsOverrides.get(url)?.get(selector);
+    }
 }
